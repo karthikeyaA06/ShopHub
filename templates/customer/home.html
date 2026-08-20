@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Shop — {{ app_settings.app_name }}{% endblock %}
+{% block content %}
+<div class="page-wrap">
+
+  {% if shop %}
+    <div class="shop-strip">
+      🛍️ Shopping from <strong>{{ shop.shop_name }}</strong>
+      <a href="{{ url_for('customer.store_search') }}" class="btn btn-sm btn-light ms-auto">Switch Shop</a>
+    </div>
+  {% else %}
+    <div class="alert alert-info d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <span>👋 Pick a shop first to start adding items to your cart, or browse the full catalog below.</span>
+      <a href="{{ url_for('customer.store_search') }}" class="btn btn-brand btn-sm">🔎 Find a Shop</a>
+    </div>
+  {% endif %}
+
+  <form class="row g-2 mb-4" method="GET">
+    <div class="col-md-8">
+      <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="🔍 Search products (e.g. milk, dal, rice)...">
+    </div>
+    <div class="col-md-4">
+      <select name="category" class="form-select" onchange="this.form.submit()">
+        <option value="">All Categories</option>
+        {% for c in categories %}
+          <option value="{{ c }}" {% if c == active_category %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  {% if products %}
+    <div class="product-grid">
+      {% for p in products %}
+        <div class="product-card">
+          <div class="product-img-wrap">
+            {% if p.image and (p.image.startswith('http://') or p.image.startswith('https://')) %}
+              <img src="{{ p.image }}" alt="{{ p.name }}"
+                   onerror="this.parentElement.innerHTML='<span class=&quot;product-placeholder-icon&quot;>🛒</span>'">
+            {% else %}
+              <span class="product-placeholder-icon">🛒</span>
+            {% endif %}
+          </div>
+          <span class="product-cat-badge">{{ p.category }}</span>
+          <div class="product-name">{{ p.name }}</div>
+          <div class="product-mrp">Unit: {{ p.unit }}</div>
+          <div class="product-price">₹{{ '%.2f'|format(p.mrp) }}</div>
+          {% if shop %}
+          <form class="add-cart-form" action="{{ url_for('customer.add_to_cart') }}" method="POST">
+            <input type="hidden" name="product_id" value="{{ p.id }}">
+            <input type="hidden" name="qty" value="1">
+            <button type="submit" class="btn btn-brand btn-sm add-cart-btn">Add to Cart 🛒</button>
+          </form>
+          {% else %}
+          <button class="btn btn-outline-secondary btn-sm add-cart-btn" disabled title="Select a shop first">Select shop first</button>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="emoji">🛒</div>
+      <h5>No products found</h5>
+      <p>Try a different search or category.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

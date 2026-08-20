@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Customers — Admin{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <h3 class="section-title">🧑‍🤝‍🧑 Registered Customers</h3>
+  <form class="mb-4" method="GET">
+    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="🔍 Search by name..." style="max-width:340px;">
+  </form>
+
+  {% if customers %}
+    <div class="card-soft p-3">
+      <div class="table-responsive">
+        <table class="table table-soft align-middle">
+          <thead><tr><th>Name</th><th>Phone</th><th>Joined</th></tr></thead>
+          <tbody>
+          {% for c in customers %}
+            <tr>
+              <td class="fw-semibold">{{ c.name }}</td>
+              <td>{{ c.phone }}</td>
+              <td>{{ c.created_at | ist('%d %b %Y') }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-state"><div class="emoji">🧑‍🤝‍🧑</div><h5>No customers found</h5></div>
+  {% endif %}
+</div>
+{% endblock %}

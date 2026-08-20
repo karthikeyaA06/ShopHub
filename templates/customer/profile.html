@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}My Profile — {{ app_settings.app_name }}{% endblock %}
+{% block content %}
+<div class="page-wrap" style="max-width:640px;">
+  <h3 class="section-title">👤 My Profile</h3>
+  <div class="card-soft p-4">
+    <form method="POST">
+      <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input type="text" name="name" class="form-control" value="{{ customer.name }}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Phone Number</label>
+        <input type="text" class="form-control" value="{{ customer.phone }}" disabled>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Delivery Address</label>
+        <textarea name="delivery_address" class="form-control" rows="3" placeholder="House no, street, area, city, pincode">{{ customer.delivery_address }}</textarea>
+      </div>
+      <button type="submit" class="btn btn-brand">Save Changes ✅</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Orders — {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <h3 class="section-title">📦 Orders</h3>
+
+  <div class="mb-3 d-flex gap-2 flex-wrap">
+    <a href="{{ url_for('shopkeeper.orders') }}" class="btn btn-sm {{ 'btn-brand' if not status_filter else 'btn-outline-secondary' }}">All</a>
+    <a href="{{ url_for('shopkeeper.orders', status='placed') }}" class="btn btn-sm {{ 'btn-brand' if status_filter=='placed' else 'btn-outline-secondary' }}">Placed</a>
+    <a href="{{ url_for('shopkeeper.orders', status='packed') }}" class="btn btn-sm {{ 'btn-brand' if status_filter=='packed' else 'btn-outline-secondary' }}">Packed</a>
+    <a href="{{ url_for('shopkeeper.orders', status='payment_uploaded') }}" class="btn btn-sm {{ 'btn-brand' if status_filter=='payment_uploaded' else 'btn-outline-secondary' }}">Payment Uploaded</a>
+    <a href="{{ url_for('shopkeeper.orders', status='confirmed') }}" class="btn btn-sm {{ 'btn-brand' if status_filter=='confirmed' else 'btn-outline-secondary' }}">Confirmed</a>
+  </div>
+
+  {% if orders %}
+    <div class="card-soft p-3">
+      <div class="table-responsive">
+        <table class="table table-soft mb-0">
+          <thead><tr><th>Order</th><th>Date</th><th>Status</th><th>Amount</th><th></th></tr></thead>
+          <tbody>
+          {% for o in orders %}
+            <tr>
+              <td>#{{ o.id }}</td>
+              <td>{{ o.created_at | ist('%d %b, %I:%M %p') }}</td>
+              <td><span class="status-badge status-{{ o.status }}">{{ o.status.replace('_',' ')|title }}</span></td>
+              <td>₹{{ '%.2f'|format(o.total_amount) }}</td>
+              <td><a href="{{ url_for('shopkeeper.order_detail', order_id=o.id) }}" class="btn btn-sm btn-brand">Manage</a></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-state"><div class="emoji">📦</div><h5>No orders found</h5></div>
+  {% endif %}
+</div>
+{% endblock %}

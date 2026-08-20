@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Admin Login — {{ app_settings.app_name }}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <span class="auth-icon">🛡️</span>
+    <h3 class="text-center fw-bold mb-1">Admin Login</h3>
+    <p class="text-center text-muted mb-4">Restricted access — platform control center</p>
+    <form method="POST">
+      <div class="mb-3">
+        <label class="form-label">Admin Email</label>
+        <input type="email" name="email" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-brand w-100 mb-3">Login</button>
+      <p class="small text-muted text-center mb-0">No self-registration is available for admin accounts.</p>
+      <div class="text-center mt-3">
+        <a href="{{ url_for('auth.select_role') }}" class="small text-muted">← Back to role selection</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

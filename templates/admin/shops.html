@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Registered Shops — Admin{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <h3 class="section-title">🏪 Registered Shops</h3>
+  <form class="mb-4" method="GET">
+    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="🔍 Search by shop name..." style="max-width:340px;">
+  </form>
+
+  {% if shops %}
+    <div class="card-soft p-3">
+      <div class="table-responsive">
+        <table class="table table-soft align-middle">
+          <thead><tr><th>Shop</th><th>Owner</th><th>Phone</th><th>GSTIN</th><th>Address</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+          {% for s in shops %}
+            <tr>
+              <td class="fw-semibold">{{ s.shop_name }}</td>
+              <td>{{ s.name }}</td>
+              <td>{{ s.phone }}</td>
+              <td>{{ s.gstin or '—' }}</td>
+              <td class="small">{{ s.shop_address or '—' }}</td>
+              <td>
+                {% if s.is_active %}<span class="status-badge status-confirmed">Active</span>
+                {% else %}<span class="status-badge status-cancelled">Inactive</span>{% endif %}
+              </td>
+              <td>
+                <form method="POST" action="{{ url_for('admin.toggle_shop_active', shop_id=s.id) }}">
+                  <button type="submit" class="btn btn-sm {{ 'btn-outline-danger' if s.is_active else 'btn-outline-success' }}">
+                    {{ 'Deactivate' if s.is_active else 'Activate' }}
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-state"><div class="emoji">🏪</div><h5>No shops found</h5></div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Find Shops — {{ app_settings.app_name }}{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <h3 class="section-title">🔎 Find a Shop</h3>
+
+  <div class="card-soft p-4 mb-4">
+    <form class="row g-3" method="GET">
+      <div class="col-md-5">
+        <label class="form-label">Search by Store Name</label>
+        <input type="text" name="name" value="{{ name_q }}" class="form-control" placeholder="e.g. Sharma General Store">
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Search by Location</label>
+        <input type="text" name="location" value="{{ loc_q }}" class="form-control" placeholder="e.g. Indiranagar">
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-brand w-100">Search</button>
+      </div>
+    </form>
+  </div>
+
+  {% if results %}
+    <div class="row g-3">
+      {% for shop in results %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card-soft p-3 h-100 d-flex flex-column">
+            <h5 class="fw-bold mb-1">🏪 {{ shop.shop_name }}</h5>
+            <p class="text-muted small mb-1">📍 {{ shop.location_area or shop.shop_address or 'Location not specified' }}</p>
+            <p class="text-muted small mb-3">{{ shop.shop_address }}</p>
+            <a href="{{ url_for('customer.select_shop', shop_id=shop.id) }}" class="btn btn-brand btn-sm mt-auto">Shop Here 🛍️</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% elif name_q or loc_q %}
+    <div class="empty-state">
+      <div class="emoji">🏚️</div>
+      <h5>No shops found</h5>
+      <p>Try a different name or location.</p>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="emoji">🏪</div>
+      <h5>Search for a store by name or location</h5>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

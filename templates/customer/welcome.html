@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Welcome {{ customer.name }}{% endblock %}
+{% block content %}
+<div class="welcome-screen">
+  <div class="welcome-badge">🙋</div>
+  <div class="welcome-title">Welcome, {{ customer.name.split(' ')[0] }}! 👋</div>
+  <p class="welcome-sub">Fresh groceries from your favourite local shops are just a click away 🛒</p>
+  <div id="splash-redirect-url" data-url="{{ url_for('customer.home') }}"></div>
+</div>
+{% endblock %}

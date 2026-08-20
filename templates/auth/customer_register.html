@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Customer Registration — {{ app_settings.app_name }}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card" style="max-width: 520px;">
+    <span class="auth-icon">🥳</span>
+    <h3 class="text-center fw-bold mb-1">Create Customer Account</h3>
+    <p class="text-center text-muted mb-4">Join {{ app_settings.app_name }} in seconds</p>
+    <form method="POST">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="name" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" name="phone" class="form-control" required>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Email (optional)</label>
+          <input type="email" name="email" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" name="confirm_password" class="form-control" required>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Security Question <span class="text-muted small">(for password reset)</span></label>
+          <select name="security_question" class="form-select">
+            <option>What is your favourite food?</option>
+            <option>What is your pet's name?</option>
+            <option>What city were you born in?</option>
+            <option>What is your mother's maiden name?</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Your Answer</label>
+          <input type="text" name="security_answer" class="form-control" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-brand w-100 mt-4 mb-3">Create Account 🎉</button>
+      <div class="text-center small">
+        Already have an account? <a href="{{ url_for('auth.customer_login') }}">Login</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

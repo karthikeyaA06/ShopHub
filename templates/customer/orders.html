@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}My Orders — {{ app_settings.app_name }}{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <h3 class="section-title">📦 My Orders</h3>
+
+  {% if orders %}
+    {% for order in orders %}
+      {% set shop = order.shopkeeper %}
+      <div class="card-soft p-4 mb-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+          <div>
+            <h5 class="fw-bold mb-1">Order #{{ order.id }} — {{ shop.shop_name }}</h5>
+            <p class="text-muted small mb-0">Placed on {{ order.created_at | ist }} IST</p>
+          </div>
+          <span class="status-badge status-{{ order.status }}">
+            {% if order.status == 'placed' %}⏳ Placed
+            {% elif order.status == 'packed' %}📦 Packed — Ready for Payment
+            {% elif order.status == 'payment_uploaded' %}🔍 Payment Under Review
+            {% elif order.status == 'confirmed' %}✅ Confirmed
+            {% elif order.status == 'cancelled' %}❌ Cancelled
+            {% endif %}
+          </span>
+        </div>
+
+        <div class="table-responsive mb-3">
+          <table class="table table-sm table-soft mb-0">
+            <thead><tr><th>Item</th><th>Qty</th><th>MRP</th><th>Price</th></tr></thead>
+            <tbody>
+              {% for item in order.items %}
+              <tr>
+                <td>{{ item.product_name }}</td>
+                <td>{{ item.qty }} {{ item.unit }}</td>
+                <td>₹{{ '%.2f'|format(item.mrp) }}</td>
+                <td>₹{{ '%.2f'|format(item.selling_price) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <p class="fw-bold mb-3">Total: ₹{{ '%.2f'|format(order.total_amount) }}</p>
+
+        {% if order.status == 'packed' %}
+          <div class="row g-3 align-items-center bg-light rounded-3 p-3">
+            {% if razorpay_enabled %}
+              <div class="col-12">
+                <button class="btn btn-brand w-100 razorpay-pay-btn" data-order-id="{{ order.id }}">
+                  🔒 Pay Securely via Razorpay — ₹{{ '%.2f'|format(order.total_amount) }}
+                </button>
+                <p class="text-center text-muted small mt-2 mb-0">Verified automatically — no screenshot needed</p>
+              </div>
+              <div class="col-12"><hr class="my-2"><p class="text-center text-muted small mb-0">— or pay via UPI QR below —</p></div>
+            {% endif %}
+            <div class="col-md-4 text-center">
+              {% if order.payment_qr_image %}
+                <img src="{{ url_for('static', filename=order.payment_qr_image) }}" alt="Payment QR" style="max-width:160px;" class="qr-box">
+                <p class="small fw-semibold text-success mt-2 mb-0">🔒 Amount locked: ₹{{ '%.2f'|format(order.total_amount) }}</p>
+                <p class="small text-muted mb-0">Your UPI app should show this exact amount and won't let you change it.</p>
+              {% elif shop.qr_image %}
+                <img src="{{ url_for('static', filename=shop.qr_image) }}" alt="Shop QR" style="max-width:160px;" class="qr-box">
+                <p class="small text-warning mt-2 mb-0">⚠️ Enter ₹{{ '%.2f'|format(order.total_amount) }} manually — this QR doesn't lock the amount.</p>
+              {% else %}
+                <p class="text-muted small">Shop hasn't added a QR/UPI yet — please contact them directly.</p>
+              {% endif %}
+              <p class="small text-muted mt-2 mb-0">UPI: {{ shop.upi_id or 'N/A' }}</p>
+
+              {% set pay_links = upi_pay_links(shop, order) %}
+              {% if pay_links %}
+                <p class="small text-muted mt-3 mb-2">Or pay directly from an app <span class="text-muted">(mobile only)</span>:</p>
+                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                  <a href="{{ pay_links.gpay }}" class="btn btn-outline-primary btn-sm">📱 Google Pay</a>
+                  <a href="{{ pay_links.phonepe }}" class="btn btn-outline-primary btn-sm">📲 PhonePe</a>
+                  <a href="{{ pay_links.paytm }}" class="btn btn-outline-primary btn-sm">💰 Paytm</a>
+                  <a href="{{ pay_links.generic }}" class="btn btn-outline-secondary btn-sm">🔗 Other UPI App</a>
+                </div>
+              {% endif %}
+            </div>
+            <div class="col-md-8">
+              <form method="POST" enctype="multipart/form-data" action="{{ url_for('customer.upload_payment', order_id=order.id) }}">
+                <label class="form-label">Upload Payment Screenshot</label>
+                <div class="d-flex gap-2 flex-wrap">
+                  <input type="file" name="screenshot" accept="image/*" class="form-control" required style="max-width:280px;">
+                  <button type="submit" class="btn btn-outline-primary">Upload ✅</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        {% elif order.status == 'payment_uploaded' %}
+          <div class="alert alert-info mb-0">⏳ Payment screenshot submitted. Waiting for the shop to confirm your payment.</div>
+        {% elif order.status == 'confirmed' %}
+          {% if order.payment_method == 'razorpay' %}
+            <p class="text-success small mb-2">🔒 Payment verified securely via Razorpay</p>
+          {% endif %}
+          <a href="{{ url_for('customer.download_bill', order_id=order.id) }}" class="btn btn-accent">⬇️ Download E-Bill (PDF)</a>
+        {% elif order.status == 'placed' %}
+          <div class="alert alert-secondary mb-0">Waiting for the shop to pack your order.</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div class="emoji">📦</div>
+      <h5>No orders yet</h5>
+      <a href="{{ url_for('customer.home') }}" class="btn btn-brand mt-2">Start Shopping</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

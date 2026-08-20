@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Reset Password — {{ app_settings.app_name }}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <span class="auth-icon">🔑</span>
+    <h3 class="text-center fw-bold mb-1">Forgot Password</h3>
+
+    {% if not found %}
+      <p class="text-center text-muted mb-4">Enter your registered phone number</p>
+      <form method="POST">
+        <input type="hidden" name="step" value="find">
+        <div class="mb-3">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" name="phone" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-brand w-100">Continue</button>
+      </form>
+    {% else %}
+      <p class="text-center text-muted mb-4">Answer your security question</p>
+      <form method="POST">
+        <input type="hidden" name="step" value="verify">
+        <input type="hidden" name="phone" value="{{ phone }}">
+        <div class="mb-3">
+          <label class="form-label">{{ found.security_question }}</label>
+          <input type="text" name="security_answer" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">New Password</label>
+          <input type="password" name="new_password" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" name="confirm_password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-brand w-100">Reset Password ✅</button>
+      </form>
+    {% endif %}
+
+    <div class="text-center mt-4">
+      <a href="{{ url_for('auth.customer_login') }}" class="small text-muted">← Back to login</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

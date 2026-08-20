@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Inventory — {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <h3 class="section-title mb-0">📋 Inventory</h3>
+    <form method="POST" action="{{ url_for('shopkeeper.inventory_add_all') }}">
+      <button type="submit" class="btn btn-accent">➕ Add All Admin Products</button>
+    </form>
+  </div>
+  <p class="text-muted">Pick which products from the admin master catalog you want to sell. MRP is fixed by admin — you can offer discounts per-order later from Orders.</p>
+
+  <div class="card-soft p-3">
+    <div class="table-responsive">
+      <table class="table table-soft align-middle">
+        <thead><tr><th>Product</th><th>Category</th><th>MRP</th><th>Unit</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for p in products %}
+          <tr>
+            <td>{{ p.name }}</td>
+            <td>{{ p.category }}</td>
+            <td>₹{{ '%.2f'|format(p.mrp) }}</td>
+            <td>{{ p.unit }}</td>
+            <td>
+              {% if p.id in owned_ids %}
+                <span class="status-badge status-confirmed">In Inventory</span>
+              {% else %}
+                <span class="status-badge status-placed">Not Added</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if p.id in owned_ids %}
+                <form method="POST" action="{{ url_for('shopkeeper.inventory_remove', product_id=p.id) }}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                </form>
+              {% else %}
+                <form method="POST" action="{{ url_for('shopkeeper.inventory_add', product_id=p.id) }}">
+                  <button type="submit" class="btn btn-sm btn-brand">Add</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Analytics — {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <h3 class="section-title">📊 Analytics</h3>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-value">₹{{ '%.2f'|format(total_earnings) }}</div>
+        <div class="stat-label">Total Earnings</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">{{ total_orders }}</div>
+        <div class="stat-label">Confirmed Orders</div>
+      </div>
+    </div>
+  </div>
+
+  <h5 class="fw-bold mb-3">Top Selling Products</h5>
+  {% if top_products %}
+    <div class="card-soft p-3">
+      <table class="table table-soft mb-0">
+        <thead><tr><th>Product</th><th>Units Sold</th></tr></thead>
+        <tbody>
+        {% for name, qty in top_products %}
+          <tr><td>{{ name }}</td><td>{{ qty }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state"><div class="emoji">📊</div><h5>No sales data yet</h5></div>
+  {% endif %}
+</div>
+{% endblock %}

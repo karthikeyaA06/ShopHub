@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Master Inventory — Admin{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <h3 class="section-title mb-0">📋 Master Inventory</h3>
+    <div class="d-flex gap-2">
+      <button class="btn btn-brand" data-bs-toggle="modal" data-bs-target="#addProductModal">➕ Add Product</button>
+      <form method="POST" action="{{ url_for('admin.sync_all_shops') }}">
+        <button type="submit" class="btn btn-accent">🔄 Sync to All Shops</button>
+      </form>
+    </div>
+  </div>
+
+  <form class="mb-3" method="GET">
+    <select name="category" class="form-select" style="max-width:260px;" onchange="this.form.submit()">
+      <option value="">All Categories</option>
+      {% for c in categories %}
+        <option value="{{ c }}" {% if c == active_category %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <div class="card-soft p-3">
+    <div class="table-responsive">
+      <table class="table table-soft align-middle">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>MRP</th>
+            <th>Unit</th>
+            <th>Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for p in products %}
+          <tr>
+            <td>
+              {% if p.image and (p.image.startswith('http://') or p.image.startswith('https://')) %}
+                <img src="{{ p.image }}" style="width:44px;height:44px;object-fit:contain;"
+                     onerror="this.outerHTML='<span class=&quot;product-placeholder-icon&quot; style=&quot;font-size:1.6rem;&quot;>🛒</span>'">
+              {% else %}
+                <span class="product-placeholder-icon" style="font-size:1.6rem;">🛒</span>
+              {% endif %}
+            </td>
+            <td class="fw-semibold">{{ p.name }}</td>
+            <td>{{ p.category }}</td>
+            <td>₹{{ '%.2f'|format(p.mrp) }}</td>
+            <td>{{ p.unit }}</td>
+            <td>{% if p.is_active %}✅{% else %}🚫{% endif %}</td>
+            <td>
+              <!-- Edit Button -->
+              <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ p.id }}">Edit</button>
+              
+              <!-- Soft Delete Button (Fixed) -->
+              <form action="{{ url_for('admin.delete_product', product_id=p.id) }}" method="POST" class="d-inline ms-1">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this product?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+
+          <!-- Edit Product Modal -->
+          <div class="modal fade" id="editModal{{ p.id }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="POST" action="{{ url_for('admin.inventory_edit', product_id=p.id) }}">
+                  <div class="modal-header"><h5 class="modal-title">Edit {{ p.name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                  <div class="modal-body">
+                    <div class="mb-2"><label class="form-label">Name</label><input class="form-control" name="name" value="{{ p.name }}" required></div>
+                    <div class="mb-2"><label class="form-label">Category</label><input class="form-control" name="category" value="{{ p.category }}" required></div>
+                    <div class="mb-2"><label class="form-label">MRP</label><input type="number" step="0.01" class="form-control" name="mrp" value="{{ p.mrp }}" required></div>
+                    <div class="mb-2"><label class="form-label">Unit</label>
+                      <select class="form-select" name="unit">
+                        {% for u in units %}<option value="{{ u }}" {% if u == p.unit %}selected{% endif %}>{{ u }}</option>{% endfor %}
+                      </select>
+                    </div>
+                    <div class="mb-2"><label class="form-label">Description</label><input class="form-control" name="description" value="{{ p.description }}"></div>
+                    <div class="mb-2">
+                      <label class="form-label">Image URL</label>
+                      <input type="url" class="form-control" name="image_url" placeholder="https://example.com/image.jpg"
+                             value="{{ p.image if p.image.startswith('http') else '' }}">
+                      {% if p.image and (p.image.startswith('http://') or p.image.startswith('https://')) %}
+                        <img src="{{ p.image }}" style="width:60px;height:60px;object-fit:contain;" class="mt-2" onerror="this.style.display='none'">
+                      {% endif %}
+                    </div>
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" name="is_active" id="active{{ p.id }}" {% if p.is_active %}checked{% endif %}>
+                      <label class="form-check-label" for="active{{ p.id }}">Active (visible to shops/customers)</label>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-brand">Save Changes</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('admin.inventory_add') }}">
+        <div class="modal-header"><h5 class="modal-title">Add New Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="mb-2"><label class="form-label">Name</label><input class="form-control" name="name" required></div>
+          <div class="mb-2"><label class="form-label">Category</label><input class="form-control" name="category" required placeholder="e.g. Dairy, Pulses, Spices"></div>
+          <div class="mb-2"><label class="form-label">MRP</label><input type="number" step="0.01" class="form-control" name="mrp" required></div>
+          <div class="mb-2"><label class="form-label">Unit</label>
+            <select class="form-select" name="unit">
+              {% for u in units %}<option value="{{ u }}">{{ u }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="mb-2"><label class="form-label">Description</label><input class="form-control" name="description"></div>
+          <div class="mb-2">
+            <label class="form-label">Image URL <span class="text-muted small">(paste a link, optional)</span></label>
+            <input type="url" class="form-control" name="image_url" placeholder="https://example.com/image.jpg">
+          </div>
+        </div>
+        <div class="modal-footer"><button type="submit" class="btn btn-brand">Add Product</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

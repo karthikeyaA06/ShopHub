@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}My Cart — {{ app_settings.app_name }}{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <h3 class="section-title">🛒 My Cart</h3>
+  {% if shop %}
+    <div class="shop-strip">🛍️ Shopping from <strong>{{ shop.shop_name }}</strong></div>
+  {% endif %}
+
+  {% if items %}
+    <div class="card-soft p-3 p-md-4">
+      <div class="table-responsive">
+        <table class="table table-soft align-middle">
+          <thead>
+            <tr><th>Product</th><th>Unit</th><th>MRP</th><th>Qty</th><th>Subtotal</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td>{{ item.product.name }}</td>
+              <td>{{ item.product.unit }}</td>
+              <td>₹{{ '%.2f'|format(item.product.mrp) }}</td>
+              <td style="width:120px;">
+                <form method="POST" action="{{ url_for('customer.cart_update') }}" class="d-flex gap-1">
+                  <input type="hidden" name="item_id" value="{{ item.id }}">
+                  <input type="number" step="0.5" min="0" name="qty" value="{{ item.qty }}" class="form-control form-control-sm">
+                  <button type="submit" class="btn btn-sm btn-outline-secondary">↻</button>
+                </form>
+              </td>
+              <td>₹{{ '%.2f'|format(item.product.mrp * item.qty) }}</td>
+              <td><a href="{{ url_for('customer.cart_remove', item_id=item.id) }}" class="btn btn-sm btn-outline-danger">🗑️</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="d-flex justify-content-end align-items-center gap-3 mt-3">
+        <h5 class="mb-0">Total: ₹{{ '%.2f'|format(total) }}</h5>
+        <form method="POST" action="{{ url_for('customer.checkout') }}">
+          <button type="submit" class="btn btn-brand">Place Order ✅</button>
+        </form>
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="emoji">🛒</div>
+      <h5>Your cart is empty</h5>
+      <p>Browse products and add a few items to get started!</p>
+      <a href="{{ url_for('customer.home') }}" class="btn btn-brand mt-2">Start Shopping</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

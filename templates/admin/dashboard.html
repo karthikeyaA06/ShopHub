@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <h3 class="section-title">🛡️ Admin Dashboard</h3>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-card"><div class="stat-icon">🏪</div><div class="stat-value">{{ total_shops }}</div><div class="stat-label">Registered Shops</div></div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card"><div class="stat-icon">🧑‍🤝‍🧑</div><div class="stat-value">{{ total_customers }}</div><div class="stat-label">Registered Customers</div></div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value">{{ total_products }}</div><div class="stat-label">Catalog Products</div></div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value">₹{{ '%.0f'|format(platform_gmv) }}</div><div class="stat-label">Platform GMV</div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

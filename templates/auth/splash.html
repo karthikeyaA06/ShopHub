@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Welcome to {{ app_settings.app_name }}{% endblock %}
+{% block content %}
+<div class="splash-screen">
+  <span class="splash-float-icon" style="top:12%; left:10%;">🥦</span>
+  <span class="splash-float-icon" style="top:20%; right:12%; animation-delay: 1s;">🥛</span>
+  <span class="splash-float-icon" style="bottom:18%; left:15%; animation-delay: 2s;">🛒</span>
+  <span class="splash-float-icon" style="bottom:14%; right:16%; animation-delay: 1.5s;">🧺</span>
+
+  <div class="splash-emoji-row">🛍️ 🥕 🧀 🌶️</div>
+  <div class="splash-title">{{ app_settings.app_name }}</div>
+  <div class="splash-sub">Your local grocery marketplace, delivered with a smile 😊</div>
+  <div class="splash-loader"></div>
+  <div id="splash-redirect-url" data-url="{{ url_for('auth.select_role') }}"></div>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Welcome {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="welcome-screen">
+  <div class="welcome-badge">🏪</div>
+  <div class="welcome-title">Welcome, {{ shop.shop_name }}! 👋</div>
+  <p class="welcome-sub">Let's get your orders moving 📦</p>
+  <div id="splash-redirect-url" data-url="{{ url_for('shopkeeper.dashboard') }}"></div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Security — Admin{% endblock %}
+{% block content %}
+<div class="page-wrap" style="max-width:700px;">
+  <h3 class="section-title">🔐 API &amp; Platform Security</h3>
+  <div class="card-soft p-4">
+    <p class="text-muted">This section is a starting point for security controls — wire it up to real infrastructure (secrets manager, WAF, rate limiter) before going to production.</p>
+    <div class="mb-3">
+      <label class="form-label">Admin Account</label>
+      <input type="text" class="form-control" value="{{ admin.email }}" disabled>
+    </div>
+    <ul class="list-group">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        Session-based authentication <span class="badge bg-success">Enabled</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        Password hashing (Werkzeug PBKDF2) <span class="badge bg-success">Enabled</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        HTTPS enforcement <span class="badge bg-secondary">Configure at deployment (reverse proxy / hosting)</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        Rate limiting on login endpoints <span class="badge bg-secondary">Not yet configured</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        Razorpay API keys <span class="badge bg-secondary">{{ 'Configured' if config.RAZORPAY_KEY_ID else 'Not set — add to .env' }}</span>
+      </li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

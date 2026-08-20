@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+instance/*.db
+static/uploads/qr/*
+!static/uploads/qr/.gitkeep
+static/uploads/payments/*
+!static/uploads/payments/.gitkeep
+static/uploads/products/*
+!static/uploads/products/.gitkeep
+static/bills/*
+!static/bills/.gitkeep
+.env
+venv/
+.vscode/

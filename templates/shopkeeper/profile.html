@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Shop Profile — {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="page-wrap" style="max-width:720px;">
+  <h3 class="section-title">👤 Shop Profile</h3>
+  <div class="card-soft p-4">
+    <form method="POST" enctype="multipart/form-data">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Owner Name</label>
+          <input type="text" name="name" class="form-control" value="{{ shop.name }}" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Shop Name</label>
+          <input type="text" name="shop_name" class="form-control" value="{{ shop.shop_name }}" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone Number</label>
+          <input type="text" name="phone" class="form-control" value="{{ shop.phone }}" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">GSTIN <span class="text-muted small">(optional)</span></label>
+          <input type="text" name="gstin" class="form-control" value="{{ shop.gstin or '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Area / Locality</label>
+          <input type="text" name="location_area" class="form-control" value="{{ shop.location_area }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">UPI ID</label>
+          <input type="text" name="upi_id" class="form-control" value="{{ shop.upi_id }}">
+        </div>
+        <div class="col-12">
+          <label class="form-label">Shop Address</label>
+          <textarea name="shop_address" class="form-control" rows="2">{{ shop.shop_address }}</textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Upload QR Code Image <span class="text-muted small">(leave blank to auto-generate from UPI ID)</span></label>
+          <input type="file" name="qr_image" accept="image/*" class="form-control">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-brand mt-4">Save Changes ✅</button>
+    </form>
+
+    <hr class="my-4">
+
+    <h5 class="fw-bold mb-3">Payment QR Code</h5>
+    {% if shop.qr_image %}
+      <img src="{{ url_for('static', filename=shop.qr_image) }}" class="qr-box" style="max-width:200px;">
+    {% else %}
+      <p class="text-muted">No QR code yet. Add a UPI ID above and save, or generate one now.</p>
+    {% endif %}
+    <form method="POST" action="{{ url_for('shopkeeper.generate_qr') }}" class="mt-3">
+      <button type="submit" class="btn btn-outline-primary">🔄 Generate QR from UPI ID</button>
+    </form>
+
+    <div class="alert alert-secondary mt-4 mb-0 small">
+      💳 <strong>Razorpay:</strong> To enable live card/UPI gateway checkout in addition to QR payments, add your
+      <code>RAZORPAY_KEY_ID</code> and <code>RAZORPAY_KEY_SECRET</code> to your <code>.env</code> file. Until then, payments flow through your UPI QR + screenshot confirmation.
+    </div>
+  </div>
+</div>
+{% endblock %}
